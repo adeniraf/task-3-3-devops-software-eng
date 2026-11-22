@@ -102,6 +102,61 @@ The cluster and its kubeconfig exist for the lifetime of the job. This
 exercises a clean deployment on every run. Use the local setup above for
 a cluster that stays running for a demo.
 
+## Monitor the local deployment
+
+Use the local kind setup above with a digest from a build that includes
+`/metrics`. The following digest was published and deployed by
+[CI run 45070292212](https://github.com/adeniraf/task-3-3-devops-software-eng/actions/runs/45070292212).
+
+```bash
+export TF_VAR_image='ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:4d7726e455ed5deb87c92784c329ac8e65f86ccb26e764b1835b4731968ae4c2'
+terraform -chdir=deploy apply
+export KUBECONFIG="$HOME/.kube/task-api-config"
+kubectl apply -k monitoring
+kubectl rollout status deploy/task-api-prometheus
+kubectl rollout status deploy/task-api-grafana
+```
+
+Run the following port-forwards in separate terminals with the same
+`KUBECONFIG`. They bind to loopback for the local demo.
+
+```bash
+kubectl port-forward svc/task-api 3000:3000
+kubectl port-forward svc/task-api-grafana 3001:3000
+kubectl port-forward svc/task-api-prometheus 9090:9090
+```
+
+Generate traffic and open the [Task API dashboard](http://127.0.0.1:3001/d/task-api/task-api).
+It shows request rate, HTTP errors, p95 latency, and scrape availability.
+
+```bash
+for i in {1..20}; do
+  curl -fsS http://127.0.0.1:3000/api/tasks >/dev/null
+  curl -sS http://127.0.0.1:3000/api/tasks/missing >/dev/null
+  sleep 1
+done
+kubectl logs deploy/task-api --tail=10
+```
+
+To demonstrate alerting, scale the API to zero in the demo cluster. Open
+[Prometheus Alerts](http://127.0.0.1:9090/alerts) and wait for
+`TaskApiUnavailable` to become firing. Check the Deployment and Service
+endpoints during the outage. Restore one replica and wait for the rule
+to return to inactive.
+
+```bash
+kubectl scale deploy/task-api --replicas=0
+kubectl get deployment task-api
+kubectl get endpointslices -l kubernetes.io/service-name=task-api
+# After the alert fires:
+kubectl scale deploy/task-api --replicas=1
+bash scripts/smoke-kubernetes.sh
+```
+
+For a CI failure, inspect the failed PR check. For a rollout failure, inspect
+the main run and its `kind-deployment` artifact. For an operational outage,
+use the Prometheus alert alongside Kubernetes events and application logs.
+
 ## API
 
 Each completed application request emits a JSON log with its HTTP method,

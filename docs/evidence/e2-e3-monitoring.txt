@@ -1,0 +1,48 @@
+Local kind monitoring verification
+Instrumented image: ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:4d7726e455ed5deb87c92784c329ac8e65f86ccb26e764b1835b4731968ae4c2
+Prometheus Server is Ready.
+{
+  "title": "Task API",
+  "panels": [
+    "Requests per second",
+    "Errors per second by HTTP status class",
+    "95th percentile latency",
+    "API availability"
+  ]
+}
+Generated 15 successful requests and 15 intentional HTTP 404 responses.
+Requests per second
+[{"labels":{},"value":"0.4590705080170278"}]
+Errors per second by HTTP status class
+[{"labels":{"status_class":"4xx"},"value":"0.2069933920704846"}]
+95th percentile latency
+[{"labels":{},"value":"0.035326933793864285"}]
+API availability
+[{"labels":{"__name__":"up","instance":"task-api.default.svc.cluster.local:3000","job":"task-api"},"value":"1"}]
+{"event":"http_request","method":"GET","status":200,"duration_ms":4.502565}
+{"event":"http_request","method":"GET","status":404,"duration_ms":2.491671}
+{"event":"http_request","method":"GET","status":200,"duration_ms":2.988863}
+{"event":"http_request","method":"GET","status":404,"duration_ms":1.679988}
+TaskApiUnavailable: inactive
+deployment.apps/task-api scaled
+TaskApiUnavailable: firing
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+task-api   0/0     0            0           24m
+NAME             ADDRESSTYPE   PORTS     ENDPOINTS   AGE
+task-api-nkrh4   IPv4          <unset>   <unset>     24m
+deployment.apps/task-api scaled
+Waiting for deployment "task-api" rollout to finish: 0 of 1 updated replicas are available...
+deployment "task-api" successfully rolled out
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/task-api   1/1     1            1           24m
+
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/task-api   ClusterIP   10.96.124.223   <none>        3000/TCP   24m
+
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/task-api-7bcd6f457d-hrmlg   1/1     Running   0          10s
+true
+true
+true
+Passed /health, /ready, and POST /api/tasks (HTTP 201)
+TaskApiUnavailable: inactive

@@ -1,0 +1,11 @@
+groups:
+  - name: task-api
+    rules:
+      - alert: TaskApiUnavailable
+        expr: up{job="task-api"} == 0
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus cannot scrape the Task API
+          description: Check the Task API rollout, pod logs, and Service endpoints.

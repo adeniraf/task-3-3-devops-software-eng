@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-api-prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-api-prometheus
+  template:
+    metadata:
+      labels:
+        app: task-api-prometheus
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v3.16.0
+          args:
+            - --config.file=/etc/task-api-prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+          ports:
+            - name: http
+              containerPort: 9090
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+          volumeMounts:
+            - name: config
+              mountPath: /etc/task-api-prometheus
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: task-api-prometheus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-api-prometheus
+spec:
+  selector:
+    app: task-api-prometheus
+  ports:
+    - port: 9090
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-api-grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-api-grafana
+  template:
+    metadata:
+      labels:
+        app: task-api-grafana
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: grafana
+          image: grafana/grafana:13.3.1
+          env:
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: Viewer
+            - name: GF_AUTH_BASIC_ENABLED
+              value: "false"
+            - name: GF_AUTH_DISABLE_LOGIN_FORM
+              value: "true"
+            - name: GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION
+              value: "true"
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+          volumeMounts:
+            - name: config
+              mountPath: /etc/grafana/provisioning/datasources/datasource.yml
+              subPath: datasource.yml
+              readOnly: true
+            - name: config
+              mountPath: /etc/grafana/provisioning/dashboards/dashboards.yml
+              subPath: dashboards.yml
+              readOnly: true
+            - name: config
+              mountPath: /etc/task-api-dashboards/task-api.json
+              subPath: task-api.json
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: task-api-grafana-config
+            items:
+              - key: datasource.yml
+                path: datasource.yml
+              - key: dashboards.yml
+                path: dashboards.yml
+              - key: task-api.json
+                path: task-api.json
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-api-grafana
+spec:
+  selector:
+    app: task-api-grafana
+  ports:
+    - port: 3000
+      targetPort: http
