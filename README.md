@@ -2,6 +2,12 @@
 
 A small TypeScript/Express REST API for a postgraduate CI/CD pipeline assignment. It stores tasks in memory and exposes health and readiness endpoints.
 
+- [Run and verify the API locally](#run-locally)
+- [Build the Docker image and review the CI gates](#run-with-docker)
+- [Deploy to Kubernetes](#deploy-locally-to-kubernetes)
+- [View monitoring and run an alert demo](#monitor-the-local-deployment)
+- [Find Task 3 demo evidence](#task-3-demo-evidence)
+
 ## Requirements
 - Node.js 22.13+, 24, or 26+
 - npm
@@ -48,11 +54,13 @@ Use a free host port if the local development server is already running.
 
 ## CI security scans
 
-On pull requests and pushes to `main`, Dependency Scan audits the npm lockfile,
-including development dependencies. Image Scan builds the runtime image and
-runs Trivy against its OS and application packages. Both checks fail on High
-or Critical vulnerabilities. Review the job logs or download the scan reports
-from the GitHub Actions run artifacts.
+On pull requests and pushes to `main`, GitHub Actions runs two security checks.
+
+- **Dependency Scan** audits the npm lockfile, including development dependencies.
+- **Image Scan** builds the runtime image and uses Trivy to scan its OS and application packages.
+
+Both checks fail on High or Critical vulnerabilities. Review the job logs or
+download the scan reports from the GitHub Actions run artifacts.
 
 On pushes to `main`, CI publishes to GitHub Container Registry after the
 build, tests, code-quality checks, and both scans pass. The publishing job
@@ -68,14 +76,14 @@ Linux AMD64 image. On ARM64, use a native kind node and a Docker engine that
 can emulate AMD64 workloads. This was verified with Colima on Apple Silicon.
 
 Use the image reference from a successful publishing job on `main`.
-The following example deploys the first verified image from
-[CI run 45066938244](https://github.com/adeniraf/task-3-3-devops-software-eng/actions/runs/45066938244).
+This example uses the verified image with request metrics from
+[CI run 45070292212](https://github.com/adeniraf/task-3-3-devops-software-eng/actions/runs/45070292212).
 
 ```bash
 kind create cluster --name task-api --kubeconfig "$HOME/.kube/task-api-config" --wait 120s
 kubectl --kubeconfig "$HOME/.kube/task-api-config" get nodes -L kubernetes.io/arch
 
-export TF_VAR_image='ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:eaaad14813cd2da085ff0f2eeb0b03fcd1a65c7d01dae45ea971299a0dd31c7a'
+export TF_VAR_image='ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:4d7726e455ed5deb87c92784c329ac8e65f86ccb26e764b1835b4731968ae4c2'
 terraform -chdir=deploy init
 terraform -chdir=deploy apply
 bash scripts/smoke-kubernetes.sh
@@ -104,13 +112,10 @@ a cluster that stays running for a demo.
 
 ## Monitor the local deployment
 
-Use the local kind setup above with a digest from a build that includes
-`/metrics`. The following digest was published and deployed by
-[CI run 45070292212](https://github.com/adeniraf/task-3-3-devops-software-eng/actions/runs/45070292212).
+After deploying the image above, add Prometheus and Grafana to the local
+kind cluster.
 
 ```bash
-export TF_VAR_image='ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:4d7726e455ed5deb87c92784c329ac8e65f86ccb26e764b1835b4731968ae4c2'
-terraform -chdir=deploy apply
 export KUBECONFIG="$HOME/.kube/task-api-config"
 kubectl apply -k monitoring
 kubectl rollout status deploy/task-api-prometheus
@@ -200,17 +205,18 @@ curl -X POST http://localhost:3000/api/tasks \
 
 ## Tests
 - `tests/unit`: in-memory store behaviour and Express configuration.
-- `tests/integration`: HTTP probes, task lifecycle, validation, and missing-task responses using Supertest.
+- `tests/integration`: HTTP probes, task lifecycle, validation, missing-task responses, and Prometheus request metrics using Supertest.
 
 ## Important limitations
 - In-memory store is **not persistent** and would not be suitable for multiple replicas. This keeps the assignment focused on delivery automation. We may add persistence only if it materially helps the deployment demonstration.
 - `/ready` checks process responsiveness, not external dependencies (there are none yet).
 - No authentication: this is a locally deployed educational demonstration, not a public service.
 
-## Assignment deliverables roadmap
-- Milestone 1: Application + tests + Git workflow.
-- Milestone 2: GitHub Actions CI, quality gates.
-- Milestone 3: Dependency scanning, multi-stage Docker and container scanning.
-- Milestone 4: kind + Terraform-managed Kubernetes deployment, automated using a self-hosted runner.
-- Milestone 5: Metrics, logs, Prometheus/Grafana and alerts.
-- Milestone 6: Reproducibility checks, failure experiments, demo and Task 4 reflective analysis.
+## Task 3 demo evidence
+
+Use the [verification evidence index](docs/evidence/README.md) to find each part of the demo.
+
+- **Git and CI** — the required check that blocked a merge and the passing rerun.
+- **Container security** — the failed Trivy scan and the passing scan after remediation.
+- **Deployment** — the automated kind rollout, matching image digest, and API smoke test.
+- **Monitoring** — the Grafana dashboard, structured request logs, and the alert firing and clearing.
