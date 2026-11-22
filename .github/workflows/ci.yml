@@ -66,3 +66,32 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+
+  dependency-scan:
+    name: Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Audit locked npm dependencies
+        run: npm audit --package-lock-only --include=dev --audit-level=high
+
+  image-scan:
+    name: Image Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Build runtime image
+        run: docker build -t task-api:ci .
+      - name: Scan runtime image
+        run: |
+          docker save task-api:ci -o "$RUNNER_TEMP/task-api.tar"
+          docker run --rm --mount "type=bind,source=$RUNNER_TEMP/task-api.tar,target=/image.tar,readonly" \
+            aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb \
+            image --input /image.tar --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --no-progress

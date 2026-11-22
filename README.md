@@ -46,6 +46,18 @@ docker stop devops-task-api
 
 Use a free host port if the local development server is already running.
 
+## CI security scans
+
+On pull requests and pushes to `main`, Dependency Scan audits the npm lockfile,
+including development dependencies. Image Scan builds the runtime image and
+runs Trivy against its OS and application packages. Both checks fail on High
+or Critical vulnerabilities. Review the scan output in the corresponding
+GitHub Actions job.
+
+When adding image publishing and deployment to this workflow, make them
+depend on successful `dependency-scan` and `image-scan` jobs. Deploy the
+scanned image by digest.
+
 ## API
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
