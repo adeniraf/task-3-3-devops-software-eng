@@ -27,6 +27,25 @@ npm run build
 npm start
 ```
 
+## Run with Docker
+
+The multi-stage build uses the same Node.js major version as CI. The slim
+runtime image contains the compiled API and production dependencies and runs
+as the non-root `node` user.
+
+```bash
+docker build -t devops-task-api:local .
+docker run --rm -d --name devops-task-api -p 127.0.0.1:3000:3000 devops-task-api:local
+docker exec devops-task-api id
+curl --fail --silent --show-error --retry 5 --retry-connrefused http://127.0.0.1:3000/health
+curl --fail --silent --show-error http://127.0.0.1:3000/ready
+curl --fail --silent --show-error -H 'Content-Type: application/json' \
+  -d '{"title":"Verify container"}' http://127.0.0.1:3000/api/tasks
+docker stop devops-task-api
+```
+
+Use a free host port if the local development server is already running.
+
 ## API
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
