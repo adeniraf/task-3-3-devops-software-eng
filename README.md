@@ -104,10 +104,13 @@ a cluster that stays running for a demo.
 
 ## Monitor the local deployment
 
-Deploy an image that includes `/metrics`, then add Prometheus and Grafana
-to the local kind cluster.
+Use the local kind setup above with a digest from a build that includes
+`/metrics`. The following digest was published and deployed by
+[CI run 45070292212](https://github.com/adeniraf/task-3-3-devops-software-eng/actions/runs/45070292212).
 
 ```bash
+export TF_VAR_image='ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:4d7726e455ed5deb87c92784c329ac8e65f86ccb26e764b1835b4731968ae4c2'
+terraform -chdir=deploy apply
 export KUBECONFIG="$HOME/.kube/task-api-config"
 kubectl apply -k monitoring
 kubectl rollout status deploy/task-api-prometheus
