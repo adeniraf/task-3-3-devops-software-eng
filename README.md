@@ -29,9 +29,9 @@ npm start
 
 ## Run with Docker
 
-The multi-stage build uses the same Node.js major version as CI. The slim
-runtime image contains the compiled API and production dependencies and runs
-as the non-root `node` user.
+The multi-stage build uses the same Node.js major version as CI. The Alpine
+runtime runs as UID 1000 and contains the compiled API and production
+dependencies. The final stage removes npm and Yarn from the runtime filesystem.
 
 ```bash
 docker build -t devops-task-api:local .
@@ -51,8 +51,8 @@ Use a free host port if the local development server is already running.
 On pull requests and pushes to `main`, Dependency Scan audits the npm lockfile,
 including development dependencies. Image Scan builds the runtime image and
 runs Trivy against its OS and application packages. Both checks fail on High
-or Critical vulnerabilities. Review the scan output in the corresponding
-GitHub Actions job.
+or Critical vulnerabilities. Review the job logs or download the scan reports
+from the GitHub Actions run artifacts.
 
 When adding image publishing and deployment to this workflow, make them
 depend on successful `dependency-scan` and `image-scan` jobs. Deploy the
