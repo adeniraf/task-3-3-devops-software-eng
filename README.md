@@ -1,6 +1,6 @@
 # DevOps in Action — Task API
 
-A small TypeScript/Express REST API for a postgraduate CI/CD pipeline assignment. The current scaffold provides a server entry point and npm verification scripts.
+A small TypeScript/Express REST API for a postgraduate CI/CD pipeline assignment. It stores tasks in memory and exposes health and readiness endpoints.
 
 ## Requirements
 - Node.js 22.13+, 24, or 26+
@@ -11,7 +11,7 @@ A small TypeScript/Express REST API for a postgraduate CI/CD pipeline assignment
 npm ci
 npm run dev
 ```
-The scaffold starts on port 3000 by default. The endpoints below are planned for Phase 1.
+The API starts on port 3000 by default. Visit `http://localhost:3000/health` to confirm it is running.
 
 ## Verify
 Use `npm ci` to install the versions in `package-lock.json`.
@@ -33,12 +33,14 @@ npm start
 | GET | `/health` | Liveness probe |
 | GET | `/ready` | Readiness probe |
 | GET | `/api/tasks` | List tasks |
-| POST | `/api/tasks` | Create task: `{ "title": "Example" }` |
+| POST | `/api/tasks` | Create a task with a title and default status `todo` |
 | GET | `/api/tasks/:id` | Fetch task |
 | PATCH | `/api/tasks/:id` | Update title and/or status |
 | DELETE | `/api/tasks/:id` | Delete task |
 
-Valid status values: `todo`, `in_progress`, `done`.
+Send JSON for POST and PATCH requests. Titles are trimmed and must contain a non-whitespace character. PATCH accepts a title, a status, or both. Valid statuses are `todo`, `in_progress`, and `done`.
+
+Creation returns `201` with the task and a `Location` header. Deletion returns `204`. Invalid payloads return `400` and requests for missing tasks return `404`.
 
 Example:
 ```bash
