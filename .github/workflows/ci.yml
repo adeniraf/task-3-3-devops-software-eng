@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   code-quality:
-    name: Code quality
+    name: 2. Code Quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -27,7 +27,7 @@ jobs:
         run: npm run typecheck
 
   tests:
-    name: Tests
+    name: 3. Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
