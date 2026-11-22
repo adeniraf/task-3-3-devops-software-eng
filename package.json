@@ -17,6 +17,7 @@
     "check:dependencies": "node scripts/check-dependency-versions.mjs"
   },
   "dependencies": {
+    "@prometheus-io/client": "0.16.1",
     "express": "5.3.0"
   },
   "devDependencies": {

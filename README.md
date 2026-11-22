@@ -103,10 +103,23 @@ exercises a clean deployment on every run. Use the local setup above for
 a cluster that stays running for a demo.
 
 ## API
+
+Each completed application request emits a JSON log with its HTTP method,
+status, and duration in milliseconds. The Prometheus endpoint `/metrics`
+exports the `task_api_http_request_duration_seconds` histogram with a
+`status_class` label. Liveness, readiness, and metrics scrapes are excluded.
+Generate traffic on the task routes, then inspect logs with
+`kubectl --kubeconfig "$HOME/.kube/task-api-config" logs deploy/task-api`
+after deploying a build that includes instrumentation.
+
+Use the histogram count for request rate and filter on `status_class="5xx"`
+for server errors. Use its buckets for latency percentiles.
+
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | GET | `/health` | Liveness probe |
 | GET | `/ready` | Readiness probe |
+| GET | `/metrics` | Prometheus request metrics |
 | GET | `/api/tasks` | List tasks |
 | POST | `/api/tasks` | Create a task with a title and default status `todo` |
 | GET | `/api/tasks/:id` | Fetch task |
