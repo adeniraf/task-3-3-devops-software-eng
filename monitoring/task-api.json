@@ -1,0 +1,124 @@
+{
+  "uid": "task-api",
+  "title": "Task API",
+  "schemaVersion": 41,
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "refresh": "5s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Requests per second",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "task-api-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(task_api_http_request_duration_seconds_count{job=\"task-api\"}[1m]))",
+          "legendFormat": "Requests per second"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Errors per second by HTTP status class",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "task-api-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (status_class) (rate(task_api_http_request_duration_seconds_count{job=\"task-api\",status_class=~\"4xx|5xx\"}[1m])) or on() (0 * sum(rate(task_api_http_request_duration_seconds_count{job=\"task-api\"}[1m])))",
+          "legendFormat": "{{status_class}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "95th percentile latency",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "task-api-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(task_api_http_request_duration_seconds_bucket{job=\"task-api\"}[1m])))",
+          "legendFormat": "95th percentile latency"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "API availability",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "task-api-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"task-api\"}",
+          "legendFormat": "API availability"
+        }
+      ]
+    }
+  ]
+}

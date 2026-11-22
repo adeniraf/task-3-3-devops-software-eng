@@ -1,0 +1,12 @@
+CI image: ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:62b7f1abb07894689b9b57e06b7089210cf0a9506c4aa3e220840f432051c2c6
+Plan: 2 to add, 0 to change, 0 to destroy.
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+deployment "task-api" successfully rolled out
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/task-api   1/1     1            1           3s
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/task-api   ClusterIP   10.96.192.171   <none>        3000/TCP   3s
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/task-api-864c6d867d-q5j68   1/1     Running   0          3s
+Passed /health, /ready, and POST /api/tasks (HTTP 201)
+ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:62b7f1abb07894689b9b57e06b7089210cf0a9506c4aa3e220840f432051c2c6

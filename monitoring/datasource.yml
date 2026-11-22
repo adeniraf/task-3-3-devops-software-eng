@@ -1,0 +1,9 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    uid: task-api-prometheus
+    type: prometheus
+    access: proxy
+    url: http://task-api-prometheus:9090
+    isDefault: true
+    editable: false
