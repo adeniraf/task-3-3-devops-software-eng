@@ -90,6 +90,18 @@ To clean up, run `terraform -chdir=deploy destroy` with the same
 `TF_VAR_image`, then delete the dedicated cluster with
 `kind delete cluster --name task-api --kubeconfig "$HOME/.kube/task-api-config"`.
 
+### Automated deployment verification
+
+On a push to `main`, the deployment job waits for the scanned image to
+publish successfully. It creates a fresh kind cluster on a GitHub-hosted
+runner, applies Terraform with the published digest, and checks the rollout,
+the API, and the running image digest. Download the `kind-deployment`
+artifact from the workflow run to see the results.
+
+The cluster and its kubeconfig exist for the lifetime of the job. This
+exercises a clean deployment on every run. Use the local setup above for
+a cluster that stays running for a demo.
+
 ## API
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
