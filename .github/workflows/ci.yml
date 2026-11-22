@@ -163,7 +163,7 @@ jobs:
           docker load -i "$RUNNER_TEMP/task-api.tar"
           docker tag task-api:ci "$tag"
           printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
-          docker push "$tag" 2>&1 | tee "$RUNNER_TEMP/docker-push.txt"
+          docker push --platform linux/amd64 "$tag" 2>&1 | tee "$RUNNER_TEMP/docker-push.txt"
           digest=$(sed -nE 's/.*digest: (sha256:[0-9a-f]{64}).*/\1/p' "$RUNNER_TEMP/docker-push.txt")
           [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
           reference="$image@$digest"
