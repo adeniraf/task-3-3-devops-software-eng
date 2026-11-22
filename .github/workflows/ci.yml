@@ -96,7 +96,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Build runtime image
-        run: docker build -t task-api:ci .
+        run: docker build --label "org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" -t task-api:ci .
       - name: Scan runtime image
         shell: bash
         run: |
@@ -112,3 +112,59 @@ jobs:
           name: image-scan
           path: ${{ runner.temp }}/trivy-image.txt
           if-no-files-found: ignore
+      - name: Smoke-test scanned image
+        shell: bash
+        run: |
+          container=$(docker run --rm -d -p 127.0.0.1::3000 task-api:ci)
+          trap 'docker stop "$container" >/dev/null' EXIT
+          address=$(docker port "$container" 3000/tcp)
+          test "$(docker exec "$container" id -u)" = 1000
+          curl -fsS --retry 5 --retry-connrefused "http://$address/health" | jq -e '.status == "ok"'
+          curl -fsS "http://$address/ready" | jq -e '.status == "ready"'
+          status=$(curl -fsS -o "$RUNNER_TEMP/task.json" -w '%{http_code}' \
+            -H 'Content-Type: application/json' -d '{"title":"CI smoke test"}' "http://$address/api/tasks")
+          test "$status" = 201
+          jq -e '.title == "CI smoke test" and .status == "todo"' "$RUNNER_TEMP/task.json"
+      - name: Pass scanned image to publisher
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: scanned-image
+          path: ${{ runner.temp }}/task-api.tar
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+
+  publish-image:
+    name: Publish Scanned Image
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: [code-quality, tests, build, dependency-scan, image-scan]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    outputs:
+      image: ${{ steps.publish.outputs.image }}
+    steps:
+      - name: Download scanned image
+        uses: actions/download-artifact@v8
+        with:
+          name: scanned-image
+          path: ${{ runner.temp }}
+      - name: Publish image to GHCR
+        id: publish
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          tag="$image:$GITHUB_SHA"
+          docker load -i "$RUNNER_TEMP/task-api.tar"
+          docker tag task-api:ci "$tag"
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          docker push "$tag" 2>&1 | tee "$RUNNER_TEMP/docker-push.txt"
+          digest=$(sed -nE 's/.*digest: (sha256:[0-9a-f]{64}).*/\1/p' "$RUNNER_TEMP/docker-push.txt")
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          reference="$image@$digest"
+          docker buildx imagetools inspect "$reference" > /dev/null
+          printf 'image=%s\n' "$reference" >> "$GITHUB_OUTPUT"
+          printf 'Published image: `%s`\n' "$reference" >> "$GITHUB_STEP_SUMMARY"

@@ -54,9 +54,12 @@ runs Trivy against its OS and application packages. Both checks fail on High
 or Critical vulnerabilities. Review the job logs or download the scan reports
 from the GitHub Actions run artifacts.
 
-When adding image publishing and deployment to this workflow, make them
-depend on successful `dependency-scan` and `image-scan` jobs. Deploy the
-scanned image by digest.
+On pushes to `main`, CI publishes to GitHub Container Registry after the
+build, tests, code-quality checks, and both scans pass. The publishing job
+loads the same image archive that Trivy scanned and CI smoke-tested.
+Use the immutable `ghcr.io/...@sha256:...` reference in the publishing job
+summary for deployment. Deployment access to a private package requires
+registry authentication.
 
 ## API
 | Method | Endpoint | Purpose |
