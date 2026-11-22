@@ -1,4 +1,5 @@
 import express, { type ErrorRequestHandler } from "express";
+import { Histogram, Registry } from "@prometheus-io/client";
 import { TaskStore, taskStatuses, type TaskStatus } from "./task-store.js";
 
 function isObject(body: unknown): body is Record<string, unknown> {
@@ -30,10 +31,38 @@ const handleJsonError: ErrorRequestHandler = (error: unknown, _req, res, next) =
 export function createApp() {
   const app = express();
   const store = new TaskStore();
+  const metrics = new Registry();
+  const requestDuration = new Histogram({
+    name: "task_api_http_request_duration_seconds",
+    help: "Duration of completed Task API requests in seconds.",
+    labelNames: ["status_class"] as const,
+    registers: [metrics],
+  });
   app.disable("x-powered-by");
 
   app.get("/health", (_req, res) => res.json({ status: "ok" }));
   app.get("/ready", (_req, res) => res.json({ status: "ready" }));
+  app.get("/metrics", async (_req, res) => {
+    res.set("Content-Type", metrics.contentType).send(await metrics.metrics());
+  });
+
+  app.use((req, res, next) => {
+    const elapsed = requestDuration.startTimer();
+    const method = req.method;
+
+    res.once("finish", () => {
+      const status = res.statusCode;
+      const durationSeconds = elapsed({ status_class: `${Math.floor(status / 100)}xx` });
+      console.log(JSON.stringify({
+        event: "http_request",
+        method,
+        status,
+        duration_ms: durationSeconds * 1000,
+      }));
+    });
+
+    next();
+  });
 
   const tasks = express.Router();
   tasks.use(express.json());
