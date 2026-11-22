@@ -1,0 +1,17 @@
+Fresh kind cluster run on Colima, using Terraform and the published CI image.
+NAME                     STATUS   ROLES           AGE   VERSION   ARCH
+task-api-control-plane   Ready    control-plane   22s   v1.37.0   arm64
+CI image: ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:eaaad14813cd2da085ff0f2eeb0b03fcd1a65c7d01dae45ea971299a0dd31c7a
+Plan: 2 to add, 0 to change, 0 to destroy.
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+deployment "task-api" successfully rolled out
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/task-api   1/1     1            1           26s
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/task-api   ClusterIP   10.96.124.223   <none>        3000/TCP   26s
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/task-api-6976fc9f5f-lglhh   1/1     Running   0          26s
+Passed /health, /ready, and POST /api/tasks (HTTP 201)
+NAME                        IMAGE                                                                                                                   IMAGE_ID
+task-api-6976fc9f5f-lglhh   ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:eaaad14813cd2da085ff0f2eeb0b03fcd1a65c7d01dae45ea971299a0dd31c7a   ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:eaaad14813cd2da085ff0f2eeb0b03fcd1a65c7d01dae45ea971299a0dd31c7a
+21s         Normal   Pulled   pod/task-api-6976fc9f5f-lglhh   Successfully pulled image "ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:eaaad14813cd2da085ff0f2eeb0b03fcd1a65c7d01dae45ea971299a0dd31c7a" in 5.012s (5.012s including waiting). Image size: 63218692 bytes.

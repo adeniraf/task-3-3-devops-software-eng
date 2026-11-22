@@ -61,6 +61,35 @@ Use the immutable `ghcr.io/...@sha256:...` reference in the publishing job
 summary for deployment. Deployment access to a private package requires
 registry authentication.
 
+## Deploy locally to Kubernetes
+
+Install Docker, kind, kubectl, Terraform and jq. CI currently publishes a
+Linux AMD64 image. On ARM64, use a native kind node and a Docker engine that
+can emulate AMD64 workloads. This was verified with Colima on Apple Silicon.
+
+Use the image reference from a successful publishing job on `main`.
+The following example deploys the first verified image from
+[CI run 45066938244](https://github.com/adeniraf/task-3-3-devops-software-eng/actions/runs/45066938244).
+
+```bash
+kind create cluster --name task-api --kubeconfig "$HOME/.kube/task-api-config" --wait 120s
+kubectl --kubeconfig "$HOME/.kube/task-api-config" get nodes -L kubernetes.io/arch
+
+export TF_VAR_image='ghcr.io/adeniraf/task-3-3-devops-software-eng@sha256:eaaad14813cd2da085ff0f2eeb0b03fcd1a65c7d01dae45ea971299a0dd31c7a'
+terraform -chdir=deploy init
+terraform -chdir=deploy apply
+bash scripts/smoke-kubernetes.sh
+```
+
+Terraform creates a single replica and a ClusterIP Service. The deployment
+uses `/health` for liveness and `/ready` for readiness. The smoke test waits
+for rollout, forwards a loopback port, checks both probes, and creates a task.
+Terraform state and the cluster credentials stay local.
+
+To clean up, run `terraform -chdir=deploy destroy` with the same
+`TF_VAR_image`, then delete the dedicated cluster with
+`kind delete cluster --name task-api --kubeconfig "$HOME/.kube/task-api-config"`.
+
 ## API
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
