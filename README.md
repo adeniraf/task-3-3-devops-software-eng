@@ -56,8 +56,8 @@ curl -X POST http://localhost:3000/api/tasks \
 4. Merge only after tests pass; tag completed milestones, e.g. `v0.1.0`.
 
 ## Tests
-- `tests/unit`: Express scaffold smoke test. Store tests are planned for A3.
-- Planned for `tests/integration`: HTTP endpoints, validation and error cases using Supertest.
+- `tests/unit`: in-memory store behaviour and Express configuration.
+- `tests/integration`: HTTP probes, task lifecycle, validation, and missing-task responses using Supertest.
 
 ## Important limitations
 - In-memory store is **not persistent** and would not be suitable for multiple replicas. This keeps the assignment focused on delivery automation. We may add persistence only if it materially helps the deployment demonstration.
