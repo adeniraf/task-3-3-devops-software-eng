@@ -119,7 +119,9 @@ jobs:
           trap 'docker stop "$container" >/dev/null' EXIT
           address=$(docker port "$container" 3000/tcp)
           test "$(docker exec "$container" id -u)" = 1000
-          curl -fsS --retry 5 --retry-connrefused "http://$address/health" | jq -e '.status == "ok"'
+          curl -fsS --retry 5 --retry-all-errors --retry-delay 1 --max-time 5 \
+            -o "$RUNNER_TEMP/health.json" "http://$address/health"
+          jq -e '.status == "ok"' "$RUNNER_TEMP/health.json"
           curl -fsS "http://$address/ready" | jq -e '.status == "ready"'
           status=$(curl -fsS -o "$RUNNER_TEMP/task.json" -w '%{http_code}' \
             -H 'Content-Type: application/json' -d '{"title":"CI smoke test"}' "http://$address/api/tasks")
