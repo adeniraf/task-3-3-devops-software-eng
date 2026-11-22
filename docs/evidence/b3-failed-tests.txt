@@ -1,0 +1,58 @@
+3. Tests	Run unit and integration tests	2026-11-22T17:57:22.6661307Z ##[group]Run npm run test:coverage | tee test-results.txt
+3. Tests	Run unit and integration tests	2026-11-22T17:57:22.6661821Z ^[[36;1mnpm run test:coverage | tee test-results.txt^[[0m
+3. Tests	Run unit and integration tests	2026-11-22T17:57:22.6702398Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+3. Tests	Run unit and integration tests	2026-11-22T17:57:22.6702772Z ##[endgroup]
+3. Tests	Run unit and integration tests	2026-11-22T17:57:22.7728895Z
+3. Tests	Run unit and integration tests	2026-11-22T17:57:22.7729647Z > devops-task-api@0.1.0 test:coverage
+3. Tests	Run unit and integration tests	2026-11-22T17:57:22.7730667Z > node --import tsx --experimental-test-coverage --test "tests/**/*.test.ts"
+3. Tests	Run unit and integration tests	2026-11-22T17:57:22.7731497Z
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.5104215Z ✔ reports liveness and readiness (53.666836ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.5516245Z ✔ creates, lists, fetches, updates and deletes a task (41.688576ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.5722311Z ✔ rejects missing, invalid and oversized creation payloads (19.485585ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.5863251Z ✔ rejects invalid updates without changing the existing task (15.193464ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.5915469Z ✔ returns 404 for operations on a missing task (6.384713ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.6617075Z ✔ the Express app disables the X-Powered-By header (4.488017ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.6624533Z ✖ creates tasks with unique IDs and lists them in creation order (12.242863ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.6628125Z ✔ updates only the supplied fields and preserves the ID (0.682813ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.6629449Z ✔ deletes only the requested task and reports missing IDs (0.298085ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7229185Z ℹ tests 9
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7229851Z ℹ suites 0
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7230744Z ℹ pass 8
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7231194Z ℹ fail 1
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7231657Z ℹ cancelled 0
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7232390Z ℹ skipped 0
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7232871Z ℹ todo 0
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7233484Z ℹ duration_ms 850.680208
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7241848Z ℹ start of coverage report
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7243458Z ℹ ---------------------------------------------------------------
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7244951Z ℹ file           | line % | branch % | funcs % | uncovered lines
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7246321Z ℹ ---------------------------------------------------------------
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7247384Z ℹ src            |        |          |         |
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7248588Z ℹ  app.ts        | 100.00 |    97.67 |  100.00 |
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7249446Z ℹ  task-store.ts | 100.00 |   100.00 |  100.00 |
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7250615Z ℹ ---------------------------------------------------------------
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7251833Z ℹ all files      | 100.00 |    98.15 |  100.00 |
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7252781Z ℹ ---------------------------------------------------------------
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7253513Z ℹ end of coverage report
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7253796Z
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7254041Z ✖ failing tests:
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7254294Z
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7254756Z test at tests/unit/task-store.test.ts:1:115
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7255891Z ✖ creates tasks with unique IDs and lists them in creation order (12.242863ms)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7257025Z   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7257736Z
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7258117Z   'todo' !== 'done'
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7258517Z
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7259802Z       at TestContext.<anonymous> (/home/runner/work/task-3-3-devops-software-eng/task-3-3-devops-software-eng/tests/unit/task-store.test.ts:14:10)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7261566Z       at Test.runInAsyncScope (node:async_hooks:227:14)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7262392Z       at Test.run (node:internal/test_runner/test:1402:25)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7263215Z       at Test.start (node:internal/test_runner/test:1262:17)
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7264227Z       at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7265070Z     generatedMessage: true,
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7265587Z     code: 'ERR_ASSERTION',
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7266100Z     actual: 'todo',
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7266532Z     expected: 'done',
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7266971Z     operator: 'strictEqual',
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7267446Z     diff: 'simple'
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7267842Z   }
+3. Tests	Run unit and integration tests	2026-11-22T17:57:23.7426511Z ##[error]Process completed with exit code 1.

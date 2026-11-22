@@ -1,0 +1,9 @@
+3. Tests	UNKNOWN STEP	2026-11-22T17:31:09.4330283Z ℹ tests 9
+3. Tests	UNKNOWN STEP	2026-11-22T17:31:09.4330906Z ℹ pass 9
+3. Tests	UNKNOWN STEP	2026-11-22T17:31:09.4331124Z ℹ fail 0
+3. Tests	UNKNOWN STEP	2026-11-22T17:31:09.4335809Z ℹ start of coverage report
+3. Tests	UNKNOWN STEP	2026-11-22T17:31:09.4337186Z ℹ file           | line % | branch % | funcs % | uncovered lines
+3. Tests	UNKNOWN STEP	2026-11-22T17:31:09.4338467Z ℹ  app.ts        | 100.00 |    97.67 |  100.00 |
+3. Tests	UNKNOWN STEP	2026-11-22T17:31:09.4338854Z ℹ  task-store.ts | 100.00 |   100.00 |  100.00 |
+3. Tests	UNKNOWN STEP	2026-11-22T17:31:09.4339681Z ℹ all files      | 100.00 |    98.15 |  100.00 |
+3. Tests	UNKNOWN STEP	2026-11-22T17:31:09.4340434Z ℹ end of coverage report

@@ -1,0 +1,64 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 557B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:24-bookworm-slim
+#2 DONE 0.7s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 126B done
+#3 DONE 0.0s
+
+#4 [base 1/2] FROM docker.io/library/node:24-bookworm-slim@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54
+#4 resolve docker.io/library/node:24-bookworm-slim@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 112.21kB done
+#5 DONE 0.0s
+
+#6 [production-dependencies 2/2] RUN npm ci --omit=dev
+#6 CACHED
+
+#7 [build 4/5] COPY src/ ./src/
+#7 CACHED
+
+#8 [build 5/5] RUN npm run build
+#8 CACHED
+
+#9 [build 1/5] COPY package.json package-lock.json ./
+#9 CACHED
+
+#10 [build 2/5] RUN npm ci
+#10 CACHED
+
+#11 [base 2/2] WORKDIR /app
+#11 CACHED
+
+#12 [build 3/5] COPY tsconfig.json tsconfig.build.json ./
+#12 CACHED
+
+#13 [runtime 2/3] COPY --from=production-dependencies /app/node_modules ./node_modules
+#13 CACHED
+
+#14 [runtime 1/3] COPY package.json ./
+#14 CACHED
+
+#15 [runtime 3/3] COPY --from=build /app/dist ./dist
+#15 CACHED
+
+#16 exporting to image
+#16 exporting layers done
+#16 exporting manifest sha256:e484870fa87e3098ceddcc16678d81cdc9bf0da1c65e9884647a11455ba0ce71 done
+#16 exporting config sha256:a19a9b2229af4f49896abfa0755d9b63372e42b888fe85304d10a4a2ff9ea8db done
+#16 exporting attestation manifest sha256:fbc2d450087b9b0c367e858b103331b5803722395eedf09d16c5536ec376df4f done
+#16 exporting manifest list sha256:ca240027b98f08fb6db00776763696cffdfca3414b1e3a2cfe0fa3a9d4c59ceb done
+#16 naming to docker.io/library/devops-task-api:local done
+#16 unpacking to docker.io/library/devops-task-api:local done
+#16 DONE 0.0s
+Image sha256:ca240027b98f08fb6db00776763696cffdfca3414b1e3a2cfe0fa3a9d4c59ceb | linux/arm64 | 81629560 bytes | user node
+Runtime UID 1000
+Express installed, TypeScript and source absent
+Health, readiness, and task creation passed
