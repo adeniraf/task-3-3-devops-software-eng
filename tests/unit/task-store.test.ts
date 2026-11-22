@@ -11,6 +11,7 @@ test("creates tasks with unique IDs and lists them in creation order", () => {
 
   assert.notEqual(first.id, second.id);
   assert.equal(first.status, "todo");
+  assert.equal(second.status, "done");
   assert.deepEqual(store.list(), [first, second]);
   assert.deepEqual(store.get(first.id), first);
 });
